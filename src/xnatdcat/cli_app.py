@@ -73,6 +73,15 @@ def __parse_cli_args():
         type=Path,
         help="Configuration file to use. If not set, will use ~/.xnatdcat/config.toml if it exists.",
     )
+
+    parser.add_argument(
+        "-pr",
+        "--project",
+        default=False,
+        type=str,
+        help="Specify if only a specific project is selected.",
+    )
+
     parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {__version__}")
 
     args = parser.parse_args()
@@ -131,7 +140,15 @@ def cli_main():
 
     session = __connect_xnat(args)
     config = load_configuration(args.config)
-    g = xnat_to_RDF(session, config)
+    project = args.project
+
+    if project:
+        try:
+            projects = [session.projects[project]]
+        except KeyError as e:
+            logger.warning(f"Project can not be find in XNAT: {e}")
+            exit()
+    g = xnat_to_RDF(session, config, project)
 
     if args.output:
         g.serialize(destination=args.output, format=args.format)
