@@ -79,7 +79,7 @@ def __parse_cli_args():
         "--project",
         default=False,
         type=str,
-        help="Specify if only a specific project is selected.",
+        help="Specify one project for dcat extraction.",
     )
 
     parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {__version__}")
