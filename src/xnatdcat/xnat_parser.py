@@ -104,7 +104,7 @@ def xnat_to_DCATCatalog(session: XNATSession, config: Dict) -> DCATCatalog:
     return catalog
 
 
-def xnat_to_RDF(session: XNATSession, config: Dict) -> Graph:
+def xnat_to_RDF(session: XNATSession, config: Dict, project=False) -> Graph:
     """Creates a DCAT-AP compliant Catalog of Datasets from XNAT
 
     Parameters
@@ -130,7 +130,12 @@ def xnat_to_RDF(session: XNATSession, config: Dict) -> Graph:
 
     failure_counter = 0
 
-    for p in tqdm(session.projects.values()):
+    if project:
+        projects = [session.projects[project]]
+    else:
+        projects = session.projects.values()
+
+    for p in tqdm(projects):
         try:
             dcat_dataset = xnat_to_DCATDataset(p, config)
             d = dcat_dataset.to_graph(userinfo_format=VCARD.VCard)
